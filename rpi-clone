@@ -95,7 +95,7 @@ HOSTNAME=`hostname`
 usage()
 	{
 	echo $"
-usage: $PGM sdN {-v|--verbose} {-f|--force-initialize} {-f2}
+usage: $PGM sdN {-v|--verbose} {-n|--dry-run} {-f|--force-initialize} {-f2}
          {-p|--p1-size size} {-u|--unattended} {-U|--Unattended} {-q|--quiet}
          {-s|--setup host} {-e|--edit-fstab sdX } {-m|--mountdir dir }
          {-L|--label-partitions label} {-l|--leave-sd-usb-boot}
@@ -104,6 +104,8 @@ usage: $PGM sdN {-v|--verbose} {-f|--force-initialize} {-f2}
          {--exclude=PATTERN} {--exclude-from=FILE}
 
     -v	    - verbose rsync, list all files as they are copied.
+    -n      - This tells rsync to not do any file transfers, instead it will 
+	      just report the actions it would have taken.
     -f	    - force initialize the destination disk by imaging the booted disk
                 partition structure.  File systems are then synced or imaged.
     -f2	    - force initialize only the first 2 partitions to the destination.
@@ -543,6 +545,7 @@ print_options()
 			"grub-install --root-directory=$clone /dev/$dst_disk"
 	fi
 	printf "%-22s : %s.\n" "Verbose mode" "$verbose"
+	printf "%-22s : %s.\n" "Dry Run" "$dry_run"
 	printf "%-23s:\n" "-----------------------"
 	}
 
@@ -756,6 +759,7 @@ setup_args=""
 edit_fstab_name=""
 ext_label=""
 verbose="no"
+dry_run="no"
 
 force_initialize=0
 force_2_parts=0
@@ -776,6 +780,10 @@ do
 		-v|--verbose)
 			verbose="yes"
 			rsync_options=${rsync_options}v
+			;;
+		-n|--dry-run)
+			dry_run="yes"
+			rsync_options=${rsync_options}n
 			;;
 		-u|--unattended)
 			unattended=1
